@@ -1,7 +1,7 @@
 # swerve-drive
 Simple swerve drive implementation in java by Eric Engelhart
 
-This was originally created for Team 1251 who can be found at team1251.org
+This was originally created for Team 1251 who can be found at [team1251.org](www.team1251.org)
 
 # How to use:
 

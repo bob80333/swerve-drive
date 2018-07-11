@@ -1,34 +1,25 @@
 package org.team1251.swervedrive;
 
-import edu.wpi.first.wpilibj.PIDController;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 /**
  * Created by Eric Engelhart on 3/20/2017.
  */
 public class SwerveWheel {
-    private PIDController rotation;
-    private PIDController speed;
+    private TalonSRX rotation;
+    private TalonSRX speed;
 
-    public SwerveWheel(PIDController rotation, PIDController speed){
+    public SwerveWheel(TalonSRX rotation, TalonSRX speed){
         this.rotation  = rotation;
         this.speed = speed;
     }
 
     public void updateSpeed(double newSpeed){
-        speed.setSetpoint(newSpeed);
+        speed.set(ControlMode.Velocity, newSpeed);
     }
 
     public void updateRotation(double newAngle){
-        rotation.setSetpoint(newAngle);
-    }
-
-    public void disable() {
-        rotation.disable();
-        speed.disable();
-    }
-
-    public void enable() {
-        rotation.enable();
-        speed.enable();
+        rotation.set(ControlMode.Velocity, newAngle);
     }
 }

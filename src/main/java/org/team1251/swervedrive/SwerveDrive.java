@@ -59,23 +59,28 @@ public class SwerveDrive {
      */
     private void calculate(double rotationRad, double movementX, double movementY){
         // calculate x/y components for wheels 1 & 3 as thats all that's needed
-        double wheel1X = movementX + (rotationRad * (wheelbase  / 2.0));
-        double wheel1Y = movementY - (rotationRad * (trackwidth / 2.0));
-        double wheel3X = movementX - (rotationRad * (wheelbase  / 2.0));
-        double wheel3Y = movementY + (rotationRad * (trackwidth / 2.0));
+        double B = movementX + (rotationRad * (wheelbase  / 2.0));
+        double C = movementY - (rotationRad * (trackwidth / 2.0));
+        double A = movementX - (rotationRad * (wheelbase  / 2.0));
+        double D = movementY + (rotationRad * (trackwidth / 2.0));
+
+        System.out.println("ROTATION RADS " + rotationRad);
+
+        speeds = new double[4];
+        rotations = new double[4];
 
         // calculate speed/rotation for each wheel
-        speeds[0]    = FastMath.sqrt(FastMath.pow2(wheel1X) + FastMath.pow2(wheel1Y));
-        rotations[0] = FastMath.toDegrees(FastMath.atan2(wheel1X, wheel1Y));
+        speeds[0]    = FastMath.sqrt(FastMath.pow2(B) + FastMath.pow2(C));
+        rotations[0] = FastMath.toDegrees(FastMath.atan2(B, C));
 
-        speeds[1]    = FastMath.sqrt(FastMath.pow2(wheel1X) + FastMath.pow2(wheel3Y));
-        rotations[1] = FastMath.toDegrees(FastMath.atan2(wheel1X, wheel3Y));
+        speeds[1]    = FastMath.sqrt(FastMath.pow2(B) + FastMath.pow2(D));
+        rotations[1] = FastMath.toDegrees(FastMath.atan2(B, D));
 
-        speeds[2]    = FastMath.sqrt(FastMath.pow2(wheel3X) + FastMath.pow2(wheel3Y));
-        rotations[2] = FastMath.toDegrees(FastMath.atan2(wheel3X, wheel3Y));
+        speeds[2]    = FastMath.sqrt(FastMath.pow2(A) + FastMath.pow2(D));
+        rotations[2] = FastMath.toDegrees(FastMath.atan2(A, D));
 
-        speeds[3]    = FastMath.sqrt(FastMath.pow2(wheel3X) + FastMath.pow2(wheel1Y));
-        rotations[3] = FastMath.toDegrees(FastMath.atan2(wheel3X, wheel1Y));
+        speeds[3]    = FastMath.sqrt(FastMath.pow2(A) + FastMath.pow2(C));
+        rotations[3] = FastMath.toDegrees(FastMath.atan2(A, C));
 
         // normalize speeds to a good speed;
         speeds = normalizeSpeeds(speeds, movementX, movementY);
@@ -117,7 +122,6 @@ public class SwerveDrive {
         for (int i = 0; i < speeds.length; i++) {
             speeds[i] *= magnitude;
         }
-
         return speeds;
     }
 
@@ -143,19 +147,18 @@ public class SwerveDrive {
         return significantDiff(oldRotation, angle) || significantDiff(oldX, x) || significantDiff(oldY, y);
     }
 
-    public void drive(Joystick direction, Joystick rotation){
-
-        double angle = rotation.getDirectionRadians();
-        if (fieldOrientedDrive) {
-            angle -= FastMath.toRadians(normalizeGyroAngle(gyro.getAngle()));
+    public void drive(double angleRadians, double xDirection, double yDirection) {
+        double angle = angleRadians;
+        if (this.fieldOrientedDrive) {
+            angle = angleRadians - FastMath.toRadians(this.normalizeGyroAngle(this.gyro.getAngle()));
         }
 
-        if (differentFromOld(angle, direction.getX(), direction.getY())) {
+        if (this.differentFromOld(angle, xDirection, yDirection)) {
             // only recalculate and update outputs if inputs are sufficiently different
-            calculate(angle, direction.getX(), direction.getY());
-            saveJoystickInputs(angle, direction.getX(), direction.getY());
-            updateSwerveWheeels();
-        } // if old inputs are correct, old outputs are correct, no need to update anything
+            this.calculate(angle, xDirection, yDirection);
+            this.saveJoystickInputs(angle, xDirection, yDirection);
+            this.updateSwerveWheeels();
+        }
 
     }
 

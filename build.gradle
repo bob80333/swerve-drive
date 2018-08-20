@@ -3,12 +3,19 @@ plugins {
     id "edu.wpi.first.GradleRIO" version "2019.0.0-alpha-2"
 }
 
+repositories {
+    mavenCentral()
+}
 
 // Defining my dependencies. In this case, WPILib (+ friends), CTRE Toolsuite (Talon SRX)
 dependencies {
     compile wpilib()
     compile ctre()
     compile 'net.jafama:jafama:2.3.1'
+}
+
+jar {
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
 }
 
 task wrapper(type: Wrapper) {

@@ -21,6 +21,7 @@ public class SwerveDrive {
 
     private double wheelbase;
     private double trackwidth;
+    private double radius;
 
     private double oldRotation;
     private double oldX;
@@ -57,14 +58,12 @@ public class SwerveDrive {
     Wheel 4 is rightBack
     It's a counterclockwise order.
      */
-    private void calculate(double rotationRad, double movementX, double movementY){
+    private void calculate(double rotationX, double movementX, double movementY){
         // calculate x/y components for wheels 1 & 3 as thats all that's needed
-        double B = movementX + (rotationRad * (wheelbase  / 2.0));
-        double C = movementY - (rotationRad * (trackwidth / 2.0));
-        double A = movementX - (rotationRad * (wheelbase  / 2.0));
-        double D = movementY + (rotationRad * (trackwidth / 2.0));
-
-        System.out.println("ROTATION RADS " + rotationRad);
+        double A = movementX - rotationX * (wheelbase / radius);
+        double B = movementX + rotationX * (wheelbase / radius);
+        double C = movementY - rotationX * (trackwidth / radius);
+        double D = movementY + rotationX * (trackwidth / radius);
 
         speeds = new double[4];
         rotations = new double[4];
@@ -72,6 +71,8 @@ public class SwerveDrive {
         // calculate speed/rotation for each wheel
         speeds[0]    = FastMath.sqrt(FastMath.pow2(B) + FastMath.pow2(C));
         rotations[0] = FastMath.toDegrees(FastMath.atan2(B, C));
+
+        //System.out.println("Calculated " + rotations[0]);
 
         speeds[1]    = FastMath.sqrt(FastMath.pow2(B) + FastMath.pow2(D));
         rotations[1] = FastMath.toDegrees(FastMath.atan2(B, D));
@@ -128,6 +129,7 @@ public class SwerveDrive {
     public void setWheelbaseTrackwidth(double wheelbase, double trackwidth){
         this.wheelbase = wheelbase;
         this.trackwidth = trackwidth;
+        this.radius = FastMath.sqrt(FastMath.pow2(wheelbase) + FastMath.pow2(trackwidth));
     }
 
     private void updateSwerveWheeels(){
